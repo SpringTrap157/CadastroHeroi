@@ -1,0 +1,309 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script> <!-- faz axios funcionar -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script><!-- faz o vue funcionar -->
+
+    <link href="css/open-iconic-bootstrap.min.css" rel="stylesheet"> <!-- css bootstrap-->
+    <link rel="stylesheet" href="style\style.css">
+    <title>Sokovia</title>
+
+   
+    <!--Metodo obter, vai listar os herois do banco de dados-->
+    <script>
+        var vApp;
+        function createVueHerois() {
+            vApp = new Vue({
+                el: '#app',
+                data() {
+                    return {
+                        herois: null
+                    }
+                },
+                methods: {
+                    obter: function () {
+                        axios.get('https://sokovia.herokuapp.com/tratadoSokovia/cadastro').then(response => (this.herois = response.data))
+                    }
+
+
+
+                }
+            })
+
+        }
+        // aparece a modal do cadastro do novo heroi
+        function novoHeroi() {
+
+            $("#novoHeroi").modal('show');
+        }
+
+        
+
+
+        // salva o heroi
+
+
+        const URLAPP = 'https://sokovia.herokuapp.com/tratadoSokovia';
+        let heroi = {};
+        function salvaHeroi() {
+            axios.post(URLAPP + '/registro', {
+                nome: document.getElementById("txtNome").value,
+                email: document.getElementById("txtEmail").value,
+                habilidade: document.getElementById("txtHabilidade").value,
+                genero: document.getElementById("txtGenero").value,
+                localidade: document.getElementById("txtLocalidade").value,
+                origem: document.getElementById("txtOrigem").value,
+            })
+                .then(function (response) {
+                    console.log(response);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        }
+        // faz o modal apagar heroi
+        function mostrarApagaHeroi() {
+            $("#deleteHeroimodal").modal('show');
+        }
+
+        // apaga o heroi nomeado       
+        function apagaHeroi() {
+
+
+            var nome = document.getElementById("txtNome_delete").value;
+
+            axios.delete(URLAPP + '/?nome=' + nome)
+                .then(function (response) {
+                    // handle success
+                    console.log(response);
+                })
+                .catch(function (error) {
+                    if (error.response) {
+                        console.log(error.response.data);
+                        console.log(error.response.status);
+                    } else if (error.request) {
+                        console.log(error.request);
+                    } else {
+                        console.log('Error', error.message);
+                    }
+                })
+        }
+
+        // mostra modal de alterar heroi
+        function mostraralteraHeroi() {
+            $("#alterarHeroiModal").modal('show');
+        }
+        
+        // função de alterar heroi
+        function alteraHeroi() {
+            var nome = document.getElementById("txtNome_update").value;
+
+            axios.put(URLAPP + '/?nome=' + nome, {
+                habilidade: document.getElementById("txtHabilidade_update").value,
+                genero: document.getElementById("txtGenero_update").value,
+                localidade: document.getElementById("txtLocalidade_update").value,
+                origem: document.getElementById("txtOrigem_update").value,
+                email: document.getElementById("txtEmail_update").value,
+
+            })
+                .then(function (response) {
+                    console.log(response);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        }
+
+    </script>
+
+</head>
+
+<body>
+
+
+    <div class="container" id="app">
+        
+        <h1 id="Texto_Registro">Registro de Heroi Sokovia</h1>
+        <div id="divAlerta" class="alert alert-warning alert-dismissible fade" role="alert">
+            <span id="msgAlerta"></span>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th scope="col">Nome</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Habilidade</th>
+                    <th scope="col">Genero</th>
+                    <th scope="col">Localidade</th>
+                    <th scope="col">Origem</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(heroi, index) in herois">
+                    <td>{{ }}</td>
+                    <td>{{ }}</td>
+                    <td>{{ heroi.nome }}</td>
+                    <td>{{ heroi.email }}</td>
+                    <td>{{ heroi.habilidade }}</td>
+                    <td>{{ heroi.genero }}</td>
+                    <td>{{ heroi.localidade }}</td>
+                    <td>{{ heroi.origem }}</td>
+                </tr>
+
+            </tbody>
+        </table>
+
+        <button class="btn btn-outline-primary" onclick="vApp.obter();">Obter Herois</button>
+
+        <button class="btn btn-outline-success" onclick="novoHeroi()" data-dismiss="modal">Novo Heroi</button>
+
+        <!-- modal novo Heroi -->
+        <div id="novoHeroi" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Novo Heroi</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="txtNome">Nome</label>
+                            <input type="text" class="form-control" id="txtNome" placeholder="Insira seu nome" />
+
+                        </div>
+                        <div class="form-group">
+                            <label for="txtEmail">E-mail</label>
+                            <input type="text" class="form-control" id="txtEmail" placeholder="Insira seu E-mail "/>
+                        </div>
+                        <div class="form-group">
+                            <label for="txtHabilidade">Habilidade</label>
+                            <input type="text" class="form-control" id="txtHabilidade" placeholder="Insira sua Habilidade" />
+
+                        </div>
+                        <div class="form-group">
+                            <label for="txtGenero">Gênero</label>
+                            <input type="text" class="form-control" id="txtGenero" placeholder="Insira seu Gênero" />
+
+                        </div>
+                        <div class="form-group">
+                            <label for="txtLocalidade">Localidade</label>
+                            <input type="text" class="form-control" id="txtLocalidade" placeholder="Insira sua localização atual" />
+
+                        </div>
+                        <div class="form-group">
+                            <label for="txtOrigem">Origem</label>
+                            <input type="text" class="form-control" id="txtOrigem" placeholder="Insira sua origem" />
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Fechar</button>
+                        <button type="button" class="btn btn-outline-success" onclick="salvaHeroi();" data-dismiss="modal">Salvar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- modal alterar Heroi -->
+        <button class="btn btn-outline-warning" onclick="mostraralteraHeroi();">Alterar Heroi</button>
+        <div id="alterarHeroiModal" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Alterar Heroi</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="txtNome_update">Nome</label>
+                            <input type="text" class="form-control" id="txtNome_update" placeholder="(Obrigatório)"/>
+
+                        </div>
+                        <div class="form-group">
+                            <label for="txtHabilidade_update">Habilidade</label>
+                            <input type="text" class="form-control" id="txtHabilidade_update" placeholder="(Opcional)">
+                        </div>
+                        <div class="form-group">
+                            <label for="txtGenero_update">Genero</label>
+                            <input type="text" class="form-control" id="txtGenero_update" placeholder="(Opcional)">
+                        </div>
+                        <div class="form-group">
+                            <label for="txtLocalidade_update">Localidade</label>
+                            <input type="text" class="form-control" id="txtLocalidade_update" placeholder="(Opcional)" />
+
+                        </div>
+                        <div class="form-group">
+                            <label for="txtEmail_update">Email</label>
+                            <input type="text" class="form-control" id="txtEmail_update" placeholder="(Opcional)" />
+
+                        </div>
+                        <div class="form-group">
+                            <label for="txtOrigem_update">Origem</label>
+                            <input type="text" class="form-control" id="txtOrigem_update" placeholder="(Opcional)"/>
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Fechar</button>
+                        <button type="button" class="btn btn-outline-primary" onclick="alteraHeroi();" data-dismiss="modal">Alterar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- modal apagar Heroi -->
+        <button type="button" class="btn btn-outline-danger" onclick="mostrarApagaHeroi();" >Deletar Heroi</button>
+
+        <div id="deleteHeroimodal" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Eliminar Heroi</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="txtNome_delete">Nome do Heroi</label>
+                            <input type="text" class="form-control" id="txtNome_delete" placeholder="Insira o nome do heroi para ser apagdo do sistema"/>
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Fechar</button>
+                        <button type="button" class="btn btn-outline-danger" onclick="apagaHeroi();" data-dismiss="modal">Eliminar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script>createVueHerois();</script>
+</body>
+
+</html>
